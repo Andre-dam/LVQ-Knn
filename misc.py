@@ -1,16 +1,20 @@
 import pandas as pd
 from scipy.io import arff
+from sklearn import preprocessing
+import numpy as np
 
 def loadData(filename):
     print "Using dataset: "+filename
     if '.arff' in filename:
         data = arff.loadarff(filename)
-        dataset = pd.DataFrame(data[0]).values                
+        dataset = pd.DataFrame(data[0]).values
         normalizeData(dataset)
+        #dataset[:,range(len(dataset[0])-1)] = preprocessing.normalize(dataset[:,range(len(dataset[0])-1)])               
     elif '.csv' in filename or '.data' in filename:
         df=pd.read_csv(filename, sep=',',header=None)
         dataset = df.values
-        normalizeData(dataset)      
+        normalizeData(dataset)
+        #dataset[:,range(len(dataset[0])-1)] = preprocessing.normalize(dataset[:,range(len(dataset[0])-1)])                     
     else:        
         print "Unknown format!!error"
 
@@ -42,7 +46,7 @@ def normalizeData(dataset):
     for x in range(len(dataset)):
         for y in range(len(dataset[x])-1):
             if isinstance(dataset[x][y],float) == True:
-                dataset[x][y] = (dataset[x][y])/ (max[y]-min[y])
+                dataset[x][y] = (dataset[x][y] - min[y])/ (max[y]-min[y])
 
 def maxMin(dataset):
     max = list(dataset[0])
@@ -118,14 +122,26 @@ def getPrototypes(dataset):
             prototypes_book[dataset[i][-1]] = []
             prototypes_book[dataset[i][-1]].append(dataset[i])
     prototypes = []
-
+    
     for key in prototypes_book:
-        temp = []
-        for j in range(feat_len-1):
-            col_len = len(list(zip(*prototypes_book[key])[j]))
-            temp.append(sum(list(zip(*prototypes_book[key])[j])))
-            temp[j] = temp[j]/col_len
+        temp = [0] * (len(prototypes_book[key][0])-1)
+        #print len(temp)
+        for i in range(len(prototypes_book[key])):
+            for j in range(len(prototypes_book[key][i])-1):
+                temp[j] += prototypes_book[key][i][j]
+            #print temp
+        temp = map(lambda x: x/len(prototypes_book[key]),temp)
         temp.append(key)
         prototypes.append(temp)
+
+    print prototypes
+    print "aqi"
+    #prototypes = np.asarray(prototypes,dtype=float)
+        # for j in range(feat_len-1):
+        #     col_len = len(list(zip(*prototypes_book[key])[j]))
+        #     temp.append(sum(list(zip(*prototypes_book[key])[j])))
+        #     temp[j] = temp[j]/col_len
+        # temp.append(key)
+        # prototypes.append(temp)
 
     return prototypes
