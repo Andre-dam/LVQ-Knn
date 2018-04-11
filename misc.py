@@ -117,15 +117,15 @@ def getPrototypes(dataset):
         else:
             prototypes_book[dataset[i][-1]] = []
             prototypes_book[dataset[i][-1]].append(dataset[i])
-                 
+    prototypes = []
+
     for key in prototypes_book:
-        for i in range(len(prototypes_book[key])):
+        temp = []
+        for j in range(feat_len-1):
+            col_len = len(list(zip(*prototypes_book[key])[j]))
+            temp.append(sum(list(zip(*prototypes_book[key])[j])))
+            temp[j] = temp[j]/col_len
+        temp.append(key)
+        prototypes.append(temp)
 
-
-    print len(dataset), len(prototypes_book['true']), len(prototypes_book['false']) 
-
-def centeroidnp(arr):
-    length = arr.shape[0]
-    sum_x = np.sum(arr[:, 0])
-    sum_y = np.sum(arr[:, 1])
-    return sum_x/length, sum_y/length
+    return prototypes
