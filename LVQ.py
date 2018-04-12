@@ -13,12 +13,14 @@ def lvq1(prototypes, trainSet):
     knn = KNeighborsClassifier(n_neighbors=1)  
     knn.fit(prototypes_instances , prototypes_class)
 
-
     misses = 0
-    iteration = 0
+    epoch= 0
+    max_iterations = 200
+    rate = 0.4
     while True:
-        iteration += 1
-        alfa_ = 1/math.pow(2,iteration/6.0)
+        alfa_ = rate * (1 - (epoch / max_iterations))
+        epoch += 1
+        #alfa_ = 1/math.pow(2,epoch/6.0)
         
         for i in range(len(trainSet_instances)):
             neighbor_index = knn.kneighbors([trainSet_instances[i]], return_distance=False)
@@ -33,8 +35,8 @@ def lvq1(prototypes, trainSet):
                 for x in range(len(prototypes_instances[neighbor_index])):
                     prototypes_instances[neighbor_index][x] +=  alfa_ * (trainSet_instances[i][x]-float(prototypes_instances[neighbor_index][x]))
             knn.fit(prototypes_instances , prototypes_class)
-        print misses,iteration
-        if misses == 0 or iteration == 100:
+        print misses,epoch
+        if epoch == max_iterations:
             break
         misses = 0
 
