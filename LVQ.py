@@ -2,7 +2,7 @@ import numpy as np
 from sklearn.neighbors import KNeighborsClassifier
 import math
 
-def lvq(prototypes, trainSet):
+def lvq1(prototypes, trainSet):
     prototypes_instances = prototypes[:,range(len(prototypes[0])-1)]
     prototypes_class = map(str,prototypes[:,-1])
 
@@ -18,7 +18,8 @@ def lvq(prototypes, trainSet):
     iteration = 0
     while True:
         iteration += 1
-        alfa_ = 1/math.exp(iteration/2)
+        alfa_ = 1/math.pow(2,iteration/6.0)
+        
         for i in range(len(trainSet_instances)):
             neighbor_index = knn.kneighbors([trainSet_instances[i]], return_distance=False)
             neighbor_index = neighbor_index[0][0] 
@@ -27,13 +28,13 @@ def lvq(prototypes, trainSet):
             if neighbor_class != trainSet_class[i]:
                 misses += 1
                 for x in range(len(prototypes_instances[neighbor_index])):
-                    prototypes_instances[neighbor_index][x] +=  alfa_ * (float(prototypes_instances[neighbor_index][x])-trainSet_instances[i][x])
+                    prototypes_instances[neighbor_index][x] -=  alfa_ * (trainSet_instances[i][x]-float(prototypes_instances[neighbor_index][x]))
             else:
                 for x in range(len(prototypes_instances[neighbor_index])):
-                    prototypes_instances[neighbor_index][x] -=  alfa_ * (float(prototypes_instances[neighbor_index][x])-trainSet_instances[i][x])
-                knn.fit(prototypes_instances , prototypes_class)
+                    prototypes_instances[neighbor_index][x] +=  alfa_ * (trainSet_instances[i][x]-float(prototypes_instances[neighbor_index][x]))
+            knn.fit(prototypes_instances , prototypes_class)
         print misses,iteration
-        if misses == 0 or iteration == 10:
+        if misses == 0 or iteration == 100:
             break
         misses = 0
 

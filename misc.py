@@ -2,6 +2,7 @@ import pandas as pd
 from scipy.io import arff
 from sklearn import preprocessing
 import numpy as np
+from random import shuffle
 
 def loadData(filename):
     print "Using dataset: "+filename
@@ -111,6 +112,27 @@ def calculateAccuracy(testSet, predictions):
     return (correct/float(len(testSet))) * 100.0
 
 
+def getRandomPrototypes(dataset,n):
+    prototypes_book = {}
+    feat_len = len(dataset[0])
+
+    for i in range(len(dataset)):
+        if prototypes_book.has_key(dataset[i][-1]):
+            prototypes_book[dataset[i][-1]].append(dataset[i])
+        else:
+            prototypes_book[dataset[i][-1]] = []
+            prototypes_book[dataset[i][-1]].append(dataset[i])
+    prototypes = []
+
+    for key in prototypes_book:
+        rand_list = range(len(prototypes_book[key]))
+        shuffle(rand_list)
+        for i in range(n):
+            if i <= len(rand_list):
+                prototypes.append(prototypes_book[key][rand_list[i]])
+    prototypes = pd.DataFrame(prototypes).values
+    return prototypes
+
 def getPrototypes(dataset):
     prototypes_book = {}
     feat_len = len(dataset[0])
@@ -134,8 +156,9 @@ def getPrototypes(dataset):
         temp.append(key)
         prototypes.append(temp)
 
-    print prototypes
-    print "aqi"
+    #print prototypes
+    prototypes = pd.DataFrame(prototypes).values
+
     #prototypes = np.asarray(prototypes,dtype=float)
         # for j in range(feat_len-1):
         #     col_len = len(list(zip(*prototypes_book[key])[j]))
