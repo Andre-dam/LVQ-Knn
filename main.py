@@ -1,4 +1,4 @@
-#Bibliotecas utilizadas
+﻿#Bibliotecas utilizadas
 import misc
 import numpy as np
 import matplotlib.pyplot as plt
@@ -17,7 +17,7 @@ plt.scatter(dataset[:,0],dataset[:,1], c = dataset[:,2])
 plt.title("2d Dataset", fontsize='large')
 plt.show()
 
-#---------------------------------------Escolha de um prototipo aleatório de cada classe----------------------------------------
+#---------------------------------------Escolha de um prototipo aleatorio de cada classe----------------------------------------
 prototypes = misc.getRandomPrototypes(dataset,1)
 
 plt.scatter(dataset[:,0],dataset[:,1], c = dataset[:,2])
